@@ -1,0 +1,39 @@
+{
+  "name": "Y Combinator",
+  "slug": "yc",
+  "description": "YC-branded Claude Code experience",
+  "colors": {
+    "primary": "#FF6600",
+    "secondary": "#FFFFFF",
+    "accent": "#1A1A1A"
+  },
+  "verbs": [
+    "Demo day prepping",
+    "Office houring",
+    "Batch interviewing",
+    "Pivoting",
+    "Growth hacking",
+    "Series A-ing",
+    "Finding product-market fit",
+    "Shipping fast",
+    "Talking to users",
+    "Building an MVP",
+    "Iterating",
+    "Fundraising",
+    "YC applying",
+    "Ramen profiting",
+    "Doing things that don't scale",
+    "Making something people want",
+    "Launching on HN",
+    "Moving to Mountain View",
+    "Eating dinner at YC",
+    "Reading PG essays"
+  ],
+  "mascot": {
+    "name": "YC Crab",
+    "description": "Claude's crab wearing the YC shield",
+    "art_file": "mascot.txt",
+    "width": 30,
+    "height": 10
+  }
+}
