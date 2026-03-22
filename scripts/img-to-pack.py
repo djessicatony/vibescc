@@ -55,12 +55,14 @@ def image_to_halfblock(img, target_width=30):
     If both transparent = space
     """
     # Resize: width = target_width, height = proportional but must be even
+    # Use NEAREST for pixel art to avoid blurring
     aspect = img.height / img.width
-    target_height = int(target_width * aspect * 2)  # *2 because chars are ~2:1
+    target_height = int(target_width * aspect)
     if target_height % 2 != 0:
         target_height += 1
 
-    img = img.resize((target_width, target_height), Image.LANCZOS)
+    if img.width != target_width or img.height != target_height:
+        img = img.resize((target_width, target_height), Image.NEAREST)
 
     if img.mode != "RGBA":
         img = img.convert("RGBA")
@@ -69,10 +71,13 @@ def image_to_halfblock(img, target_width=30):
     width = img.width
 
     lines = []
+    row_has_content = []
     reset = "\\033[0m"
 
     for row in range(0, target_height, 2):
-        line = ""
+        # Build list of (char, fg_code, bg_code) tuples, then group runs
+        cells = []
+        has_visible = False
         for col in range(target_width):
             top_idx = row * width + col
             bot_idx = (row + 1) * width + col if (row + 1) < target_height else None
@@ -84,22 +89,57 @@ def image_to_halfblock(img, target_width=30):
             bot_trans = is_transparent(bot)
 
             if top_trans and bot_trans:
-                line += " "
+                cells.append(("\u00a0", None, None))
             elif top_trans:
-                # Only bottom pixel visible
-                fg = rgb_to_ansi(bot[0], bot[1], bot[2])
-                line += f"{fg}▄{reset}"
+                cells.append(("▄", (bot[0], bot[1], bot[2]), None))
+                has_visible = True
             elif bot_trans:
-                # Only top pixel visible
-                fg = rgb_to_ansi(top[0], top[1], top[2])
-                line += f"{fg}▀{reset}"
+                cells.append(("▀", (top[0], top[1], top[2]), None))
+                has_visible = True
             else:
-                # Both visible: top = fg ▀, bottom = bg
-                fg = rgb_to_ansi(top[0], top[1], top[2])
-                bg = rgb_to_ansi_bg(bot[0], bot[1], bot[2])
-                line += f"{fg}{bg}▀{reset}"
+                cells.append(("▀", (top[0], top[1], top[2]), (bot[0], bot[1], bot[2])))
+                has_visible = True
+
+        # Group consecutive cells with same colors to reduce escape codes
+        # Prefix every line with a reset code so leading spaces aren't stripped
+        line = f"{reset}"
+        i = 0
+        while i < len(cells):
+            char, fg, bg = cells[i]
+            if fg is None and bg is None:
+                # Transparent run — use nbsp to prevent trimming
+                run = char
+                j = i + 1
+                while j < len(cells) and cells[j][1] is None and cells[j][2] is None:
+                    run += cells[j][0]
+                    j += 1
+                line += run
+                i = j
+            else:
+                # Colored run — group same fg+bg
+                codes = ""
+                if fg:
+                    codes += rgb_to_ansi(fg[0], fg[1], fg[2])
+                if bg:
+                    codes += rgb_to_ansi_bg(bg[0], bg[1], bg[2])
+                run = char
+                j = i + 1
+                while j < len(cells) and cells[j][1] == fg and cells[j][2] == bg:
+                    run += cells[j][0]
+                    j += 1
+                line += f"{codes}{run}{reset}"
+                i = j
 
         lines.append(line)
+        row_has_content.append(has_visible)
+
+    # Strip fully transparent rows from top and bottom
+    while lines and not row_has_content[0]:
+        lines.pop(0)
+        row_has_content.pop(0)
+    while lines and not row_has_content[-1]:
+        lines.pop()
+        row_has_content.pop()
 
     return lines
 
@@ -175,7 +215,7 @@ def create_pack(input_image, name, slug, target_width, output_dir, primary_color
     art_lines = image_to_halfblock(img, target_width)
 
     # Write mascot.txt
-    mascot_content = "\n".join(art_lines)
+    mascot_content = "\n".join(art_lines) + "\n"
     with open(os.path.join(output_dir, "mascot.txt"), "w") as f:
         f.write(mascot_content)
 
