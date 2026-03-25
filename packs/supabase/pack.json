@@ -1,0 +1,30 @@
+{
+  "name": "Supabase",
+  "slug": "supabase",
+  "colors": {
+    "body": "#FAFAFA",
+    "eyes": "#3ECF8E"
+  },
+  "verbs": [
+    "Querying Postgres",
+    "Applying migrations",
+    "Syncing realtime",
+    "Authenticating users",
+    "Signing JWTs",
+    "Storing objects",
+    "Triggering edge functions",
+    "Seeding databases",
+    "Row-level securing",
+    "Broadcasting channels",
+    "Generating types",
+    "Branching databases",
+    "Vectorizing embeddings",
+    "Indexing full-text",
+    "Pooling connections",
+    "Replicating data",
+    "Backing up tables",
+    "Publishing APIs",
+    "Self-hosting",
+    "Open sourcing"
+  ]
+}
