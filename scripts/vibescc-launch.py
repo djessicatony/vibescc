@@ -283,7 +283,15 @@ def main():
                     break
                 if not data:
                     break
-                os.write(master_fd, data)
+                # Strip terminal ID responses from stdin before they
+                # enter the PTY and get echoed back to the screen
+                data = re.sub(
+                    rb"\x1bP[^\x1b]*\x1b\\|\x1b\[\?[0-9;]*c",
+                    b"",
+                    data,
+                )
+                if data:
+                    os.write(master_fd, data)
 
         # Flush any remaining buffered bytes
         remaining = color_filter.flush()
