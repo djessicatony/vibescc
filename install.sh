@@ -19,10 +19,13 @@ warn()  { echo -e "${YELLOW}▸${RESET} $1"; }
 error() { echo -e "${RED}▸${RESET} $1"; exit 1; }
 
 # ── Detect shell rc ─────────────────────────────────────────────────────
-SHELL_RC="$HOME/.zshrc"
-if [ -n "${BASH_VERSION:-}" ] || [ ! -f "$SHELL_RC" ]; then
+# Default to zsh on macOS, bash elsewhere. Create the file if missing.
+if [ "$(basename "$SHELL")" = "zsh" ] || [ "$(uname)" = "Darwin" ]; then
+    SHELL_RC="$HOME/.zshrc"
+else
     SHELL_RC="$HOME/.bashrc"
 fi
+touch "$SHELL_RC"
 
 # ── Collect available packs ─────────────────────────────────────────────
 SLUGS=()
