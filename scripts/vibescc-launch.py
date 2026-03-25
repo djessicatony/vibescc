@@ -19,6 +19,7 @@ import argparse
 import json
 import os
 import pty
+import re
 import signal
 import struct
 import sys
@@ -73,10 +74,19 @@ def build_filter(body_rgb, bg_rgb=None):
     holdback = max_pat - 1  # bytes to keep between chunks
     leftover = b""
 
+    # Regex to strip terminal identification responses:
+    # DCS responses: \x1bP...ST (\x1b\\)  — e.g. ghostty ID
+    # DA responses:  \x1b[?...c            — device attributes
+    strip_terminal_responses = re.compile(
+        rb"\x1bP[^\x1b]*\x1b\\|\x1b\[\?[0-9;]*c"
+    )
+
     def apply(data):
         nonlocal leftover
         # Prepend leftover from previous chunk
         buf = leftover + data
+        # Strip terminal ID sequences before they hit the screen
+        buf = strip_terminal_responses.sub(b"", buf)
         # Do replacements on the combined buffer
         for old, new in replacements:
             buf = buf.replace(old, new)
