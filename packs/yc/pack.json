@@ -1,11 +1,9 @@
 {
   "name": "Y Combinator",
   "slug": "yc",
-  "description": "YC-branded Claude Code experience",
   "colors": {
-    "primary": "#FF6600",
-    "secondary": "#FFFFFF",
-    "accent": "#1A1A1A"
+    "body": "#FB651E",
+    "eyes": "#FFFFFF"
   },
   "verbs": [
     "Demo day prepping",
@@ -28,12 +26,5 @@
     "Moving to Mountain View",
     "Eating dinner at YC",
     "Reading PG essays"
-  ],
-  "mascot": {
-    "name": "YC Crab",
-    "description": "Claude's crab wearing the YC shield",
-    "art_file": "mascot.txt",
-    "width": 30,
-    "height": 10
-  }
+  ]
 }

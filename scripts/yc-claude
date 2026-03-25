@@ -1,5 +1,5 @@
 #!/bin/bash
-# Launch Claude Code with YC orange crab
+# Launch Claude Code with YC-branded crab
 # Usage: yc-claude [claude args...]
 DIR="$(cd "$(dirname "$0")" && pwd)"
-exec python3 "$DIR/vibescc-launch.py" --body "255,102,0" -- "$@"
+exec python3 "$DIR/vibescc-launch.py" --config "$DIR/../packs/yc" -- "$@"

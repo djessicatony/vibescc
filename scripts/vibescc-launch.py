@@ -71,12 +71,13 @@ def parse_rgb(s):
 
 
 def load_pack_colors(pack_dir):
-    """Load body color from a vibescc pack.json."""
+    """Load body and eyes colors from a vibescc pack.json."""
     pack_json = os.path.join(pack_dir, "pack.json")
     with open(pack_json) as f:
         pack = json.load(f)
-    primary = pack["colors"]["primary"]
-    return parse_rgb(primary)
+    body = parse_rgb(pack["colors"]["body"])
+    eyes = parse_rgb(pack["colors"]["eyes"])
+    return body, eyes
 
 
 def sync_window_size(master_fd):
@@ -96,9 +97,9 @@ def main():
         help="Body color as R,G,B or #hex (default: YC orange #FF6600)",
     )
     parser.add_argument(
-        "--bg",
+        "--eyes",
         default=None,
-        help="Background/eye color as R,G,B or #hex (default: unchanged)",
+        help="Eye color as R,G,B or #hex (default: unchanged)",
     )
     parser.add_argument(
         "--config",
@@ -115,15 +116,12 @@ def main():
 
     # Resolve colors
     if args.config:
-        body_rgb = load_pack_colors(args.config)
-    elif args.body:
-        body_rgb = parse_rgb(args.body)
+        body_rgb, eyes_rgb = load_pack_colors(args.config)
     else:
-        body_rgb = (255, 102, 0)  # YC orange default
+        body_rgb = parse_rgb(args.body) if args.body else (255, 102, 0)
+        eyes_rgb = parse_rgb(args.eyes) if args.eyes else None
 
-    bg_rgb = parse_rgb(args.bg) if args.bg else None
-
-    color_filter = build_filter(body_rgb, bg_rgb)
+    color_filter = build_filter(body_rgb, eyes_rgb)
 
     # Build claude command
     claude_cmd = ["claude"] + args.claude_args
