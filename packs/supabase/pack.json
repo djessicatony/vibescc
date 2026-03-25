@@ -2,8 +2,8 @@
   "name": "Supabase",
   "slug": "supabase",
   "colors": {
-    "body": "#FAFAFA",
-    "eyes": "#3ECF8E"
+    "body": "#3ECF8E",
+    "eyes": "#FAFAFA"
   },
   "verbs": [
     "Querying Postgres",
