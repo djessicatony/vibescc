@@ -39,7 +39,11 @@ def make_replacement(r, g, b):
 
 
 def build_filter(body_rgb, bg_rgb=None):
-    """Return a function that replaces clawd colors in an ANSI byte stream."""
+    """Return a stateful function that replaces clawd colors in an ANSI byte stream.
+
+    Keeps a small overlap buffer between read() calls to catch color codes
+    that get split across chunk boundaries.
+    """
     new_body_fg = b"38;2;" + make_replacement(*body_rgb)
     new_body_bg = b"48;2;" + make_replacement(*body_rgb)
 
@@ -52,11 +56,35 @@ def build_filter(body_rgb, bg_rgb=None):
         new_bg = b"48;2;" + make_replacement(*bg_rgb)
         replacements.append((ORIGINAL_BG, new_bg))
 
-    def apply(data):
-        for old, new in replacements:
-            data = data.replace(old, new)
-        return data
+    # Longest pattern we need to match across boundaries
+    max_pat = max(len(old) for old, _ in replacements)
+    holdback = max_pat - 1  # bytes to keep between chunks
+    leftover = b""
 
+    def apply(data):
+        nonlocal leftover
+        # Prepend leftover from previous chunk
+        buf = leftover + data
+        # Do replacements on the combined buffer
+        for old, new in replacements:
+            buf = buf.replace(old, new)
+        # Hold back tail bytes in case a pattern spans into the next chunk
+        if len(buf) > holdback:
+            leftover = buf[-holdback:]
+            out = buf[:-holdback]
+        else:
+            leftover = b""
+            out = buf
+        return out
+
+    def flush():
+        """Call when stream ends to emit any held-back bytes."""
+        nonlocal leftover
+        out = leftover
+        leftover = b""
+        return out
+
+    apply.flush = flush
     return apply
 
 
@@ -172,9 +200,10 @@ def main():
                     break
                 if not data:
                     break
-                # Apply color filter to output
+                # Apply color filter to output (with overlap buffer)
                 filtered = color_filter(data)
-                os.write(sys.stdout.fileno(), filtered)
+                if filtered:
+                    os.write(sys.stdout.fileno(), filtered)
 
             if sys.stdin in rlist:
                 try:
@@ -184,6 +213,11 @@ def main():
                 if not data:
                     break
                 os.write(master_fd, data)
+
+        # Flush any remaining buffered bytes
+        remaining = color_filter.flush()
+        if remaining:
+            os.write(sys.stdout.fileno(), remaining)
 
     finally:
         # Restore terminal
