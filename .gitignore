@@ -1,2 +1,10 @@
 .DS_Store
 __pycache__/
+
+# gstack build artifacts
+.claude/skills/gstack/node_modules/
+.claude/skills/gstack/browse/dist/
+.claude/skills/gstack/bun.lock
+.gstack/
+.claude/skills/
+CLAUDE.md

@@ -83,8 +83,8 @@ with open('$SETTINGS', 'w') as f:
 }
 
 # ── Interactive menu ────────────────────────────────────────────────────
-echo ""
-echo -e "${BOLD}  VibesCC — branded Claude Code${RESET}"
+python3 "$SCRIPT_DIR/scripts/banner.py" vibescc
+echo -e "  ${DIM}branded Claude Code${RESET}"
 echo ""
 echo -e "  Pick what to install:"
 echo ""
@@ -123,6 +123,7 @@ echo ""
 
 # Install each selected pack
 for slug in "${SELECTED[@]}"; do
+    python3 "$SCRIPT_DIR/scripts/banner.py" "$slug" 2>/dev/null || true
     install_pack "$slug"
 done
 
