@@ -1,0 +1,30 @@
+{
+  "name": "Stripe",
+  "slug": "stripe",
+  "colors": {
+    "body": "#635BFF",
+    "eyes": "#FFFFFF"
+  },
+  "verbs": [
+    "Processing payments",
+    "Settling transactions",
+    "Issuing refunds",
+    "Onboarding merchants",
+    "Tokenizing cards",
+    "Detecting fraud",
+    "Balancing ledgers",
+    "Reconciling payouts",
+    "Integrating webhooks",
+    "Migrating schemas",
+    "Shipping APIs",
+    "Reviewing disputes",
+    "Scaling infrastructure",
+    "Deploying globally",
+    "Optimizing latency",
+    "Building dashboards",
+    "Generating invoices",
+    "Calculating taxes",
+    "Enabling subscriptions",
+    "Moving money"
+  ]
+}
