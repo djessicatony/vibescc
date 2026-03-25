@@ -1,0 +1,30 @@
+{
+  "name": "Vercel",
+  "slug": "vercel",
+  "colors": {
+    "body": "#000000",
+    "eyes": "#FFFFFF"
+  },
+  "verbs": [
+    "Deploying to edge",
+    "Building previews",
+    "Generating static",
+    "Server rendering",
+    "Incrementally regenerating",
+    "Streaming responses",
+    "Caching at the edge",
+    "Revalidating paths",
+    "Splitting bundles",
+    "Hydrating components",
+    "Prefetching routes",
+    "Optimizing images",
+    "Compiling middleware",
+    "Shipping to production",
+    "Rolling back deploys",
+    "Running turborepo",
+    "Connecting domains",
+    "Measuring web vitals",
+    "Tree shaking",
+    "Zero-config deploying"
+  ]
+}
