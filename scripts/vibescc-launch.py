@@ -106,13 +106,7 @@ def main():
         default=None,
         help="Path to pack directory (reads colors from pack.json)",
     )
-    parser.add_argument(
-        "claude_args",
-        nargs="*",
-        help="Additional arguments passed to claude",
-    )
-
-    args = parser.parse_args()
+    args, claude_args = parser.parse_known_args()
 
     # Resolve colors
     if args.config:
@@ -123,8 +117,8 @@ def main():
 
     color_filter = build_filter(body_rgb, eyes_rgb)
 
-    # Build claude command
-    claude_cmd = ["claude"] + args.claude_args
+    # Build claude command — everything we didn't recognize goes to claude
+    claude_cmd = ["claude"] + claude_args
 
     # ── PTY spawn with output filtering ────────────────────────────────
     # pty.fork() handles setsid/TIOCSCTTY/dup2 correctly on macOS.
