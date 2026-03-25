@@ -26,16 +26,23 @@ import fcntl
 import termios
 
 # ── Original Clawd colors (consistent across CC versions) ──────────────
-ORIGINAL_BODY = b"38;2;215;119;87"  # clawd_body: rgb(215,119,87)
+ORIGINAL_BODY = b"38;2;215;119;87"  # clawd_body / claude: rgb(215,119,87)
+ORIGINAL_SHIMMER = b"38;2;245;149;117"  # claudeShimmer: rgb(245,149,117)
 ORIGINAL_BG = b"48;2;0;0;0"  # clawd_background: rgb(0,0,0)
 
-# Also match if clawd_body appears as background (some edge rendering)
+# Also match as background colors
 ORIGINAL_BODY_AS_BG = b"48;2;215;119;87"
+ORIGINAL_SHIMMER_AS_BG = b"48;2;245;149;117"
 
 
 def make_replacement(r, g, b):
     """Build the replacement byte string for a color."""
     return f"{r};{g};{b}".encode()
+
+
+def make_shimmer(r, g, b):
+    """Generate a lighter shimmer variant of a color (same offset as claude→claudeShimmer)."""
+    return (min(r + 30, 255), min(g + 30, 255), min(b + 30, 255))
 
 
 def build_filter(body_rgb, bg_rgb=None):
@@ -44,12 +51,17 @@ def build_filter(body_rgb, bg_rgb=None):
     Keeps a small overlap buffer between read() calls to catch color codes
     that get split across chunk boundaries.
     """
+    shimmer_rgb = make_shimmer(*body_rgb)
     new_body_fg = b"38;2;" + make_replacement(*body_rgb)
     new_body_bg = b"48;2;" + make_replacement(*body_rgb)
+    new_shimmer_fg = b"38;2;" + make_replacement(*shimmer_rgb)
+    new_shimmer_bg = b"48;2;" + make_replacement(*shimmer_rgb)
 
     replacements = [
         (ORIGINAL_BODY, new_body_fg),
         (ORIGINAL_BODY_AS_BG, new_body_bg),
+        (ORIGINAL_SHIMMER, new_shimmer_fg),
+        (ORIGINAL_SHIMMER_AS_BG, new_shimmer_bg),
     ]
 
     if bg_rgb:
