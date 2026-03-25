@@ -1,0 +1,17 @@
+# Statusline approach (superseded by PTY color replacement)
+packs/*/statusline.sh
+packs/*/mascot.txt
+packs/*/sprite.png
+scripts/img-to-pack.py
+
+# Old assets
+public/
+hooks/
+
+# Old docs
+VERSIONS.md
+PLAN.md
+commands/preview.md
+
+# OS
+.DS_Store
