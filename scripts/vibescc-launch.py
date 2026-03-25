@@ -120,6 +120,42 @@ def load_pack_colors(pack_dir):
     return body, eyes
 
 
+def resolve_pack_dir(name):
+    """Resolve a pack name to its directory. Accepts a path or just a slug."""
+    if os.path.isdir(name):
+        return name
+    # Try relative to script's packs/ directory
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    packs_dir = os.path.join(script_dir, "..", "packs")
+    candidate = os.path.join(packs_dir, name)
+    if os.path.isdir(candidate):
+        return candidate
+    return None
+
+
+def apply_verbs(pack_dir):
+    """Write a pack's verbs to ~/.claude/settings.json."""
+    pack_json = os.path.join(pack_dir, "pack.json")
+    with open(pack_json) as f:
+        pack = json.load(f)
+    verbs = pack.get("verbs", [])
+    if not verbs:
+        return
+
+    settings_path = os.path.expanduser("~/.claude/settings.json")
+    try:
+        with open(settings_path) as f:
+            settings = json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        settings = {}
+
+    settings["spinnerVerbs"] = {"mode": "replace", "verbs": verbs}
+
+    with open(settings_path, "w") as f:
+        json.dump(settings, f, indent=2)
+        f.write("\n")
+
+
 def sync_window_size(master_fd):
     """Copy the real terminal's window size to the PTY master."""
     try:
@@ -146,7 +182,20 @@ def main():
         default=None,
         help="Path to pack directory (reads colors from pack.json)",
     )
+    parser.add_argument(
+        "--verbs",
+        default=None,
+        help="Pack name or path to load verbs from (e.g. looksmaxxing, stripe)",
+    )
     args, claude_args = parser.parse_known_args()
+
+    # Apply verbs from a different pack if requested
+    if args.verbs:
+        verbs_dir = resolve_pack_dir(args.verbs)
+        if verbs_dir:
+            apply_verbs(verbs_dir)
+        else:
+            print(f"Warning: verb pack '{args.verbs}' not found, skipping", file=sys.stderr)
 
     # Resolve colors
     if args.config:
