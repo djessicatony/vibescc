@@ -10,12 +10,6 @@ allowed-tools: Bash(*), Write, Read, Edit
 
 Read `~/.claude/settings.json` and remove the `spinnerVerbs` key entirely. Write back preserving all other settings.
 
-## Step 2: Remove statusline
+## Step 2: Confirm
 
-Read `~/.claude/settings.json` and remove the `statusLine` key. Write back preserving all other settings.
-
-Delete `~/.claude/vibescc-statusline.sh` if it exists.
-
-## Step 3: Confirm
-
-Tell the user the brand pack has been removed and they should restart Claude Code.
+Tell the user the brand pack has been removed. Spinner verbs revert to defaults on next launch.
