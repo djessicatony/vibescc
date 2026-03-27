@@ -1,0 +1,27 @@
+{
+  "name": "vibescc",
+  "version": "0.2.0",
+  "description": "Company-branded Claude Code — custom crab colors and spinner verbs",
+  "bin": {
+    "vibescc": "./bin/vibescc.mjs"
+  },
+  "files": [
+    "bin/",
+    "packs/",
+    "scripts/"
+  ],
+  "keywords": [
+    "claude-code",
+    "branding",
+    "cli",
+    "crab",
+    "mascot",
+    "customization"
+  ],
+  "author": "djessicatony",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/djessicatony/vibescc"
+  }
+}
