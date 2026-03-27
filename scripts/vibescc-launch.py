@@ -69,11 +69,6 @@ def build_filter(body_rgb, bg_rgb=None):
         new_bg = b"48;2;" + make_replacement(*bg_rgb)
         replacements.append((ORIGINAL_BG, new_bg))
 
-    # Longest pattern we need to match across boundaries
-    max_pat = max(len(old) for old, _ in replacements)
-    holdback = max_pat - 1  # bytes to keep between chunks
-    leftover = b""
-
     # Regex to strip terminal identification responses:
     # DCS responses: \x1bP...ST (\x1b\\)  — e.g. ghostty ID
     # DA responses:  \x1b[?...c            — device attributes
@@ -82,31 +77,13 @@ def build_filter(body_rgb, bg_rgb=None):
     )
 
     def apply(data):
-        nonlocal leftover
-        # Prepend leftover from previous chunk
-        buf = leftover + data
         # Strip terminal ID sequences before they hit the screen
-        buf = strip_terminal_responses.sub(b"", buf)
-        # Do replacements on the combined buffer
+        data = strip_terminal_responses.sub(b"", data)
+        # Do replacements
         for old, new in replacements:
-            buf = buf.replace(old, new)
-        # Hold back tail bytes in case a pattern spans into the next chunk
-        if len(buf) > holdback:
-            leftover = buf[-holdback:]
-            out = buf[:-holdback]
-        else:
-            leftover = b""
-            out = buf
-        return out
+            data = data.replace(old, new)
+        return data
 
-    def flush():
-        """Call when stream ends to emit any held-back bytes."""
-        nonlocal leftover
-        out = leftover
-        leftover = b""
-        return out
-
-    apply.flush = flush
     return apply
 
 
@@ -293,10 +270,7 @@ def main():
                 if data:
                     os.write(master_fd, data)
 
-        # Flush any remaining buffered bytes
-        remaining = color_filter.flush()
-        if remaining:
-            os.write(sys.stdout.fileno(), remaining)
+
 
     finally:
         # Restore terminal
