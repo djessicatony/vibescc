@@ -10,7 +10,7 @@ import { homedir } from "os";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, "..");
 const HOME = homedir();
-const INSTALL_DIR = join(HOME, ".vibescc");
+const INSTALL_DIR = join(HOME, ".vibes");
 const SETTINGS = join(HOME, ".claude", "settings.json");
 
 // ── Colors ──────────────────────────────────────────────────────────────
@@ -122,7 +122,7 @@ async function main() {
   // Remove old vibescc aliases
   rcContent = rcContent
     .split("\n")
-    .filter((line) => !line.includes("# vibescc:"))
+    .filter((line) => !line.includes("# vibes:"))
     .join("\n");
 
   const launcher = join(INSTALL_DIR, "scripts", "vibescc-launch.py");
@@ -137,7 +137,7 @@ async function main() {
 
     // Add alias
     const packDir = join(INSTALL_DIR, "packs", pack.slug);
-    const alias = `alias ${pack.slug}='python3 ${launcher} --config ${packDir}' # vibescc:${pack.slug}`;
+    const alias = `alias ${pack.slug}='python3 ${launcher} --config ${packDir}' # vibes:${pack.slug}`;
     rcContent += `\n${alias}`;
 
     info(`Installed ${c.bold}${pack.name}${c.reset} → type ${c.bold}${pack.slug}${c.reset} to launch`);
@@ -165,7 +165,7 @@ async function main() {
     `\n  All claude flags work: ${c.bold}--resume${c.reset}, ${c.bold}--dangerously-skip-permissions${c.reset}, etc.`
   );
   console.log(`  Switch verbs: ${c.bold}yc --verbs looksmaxxing${c.reset}`);
-  console.log(`\n  To uninstall: ${c.bold}npx vibescc uninstall${c.reset}\n`);
+  console.log(`\n  To uninstall: ${c.bold}bunx vibes uninstall${c.reset}\n`);
 }
 
 // ── Uninstall ───────────────────────────────────────────────────────────
@@ -174,7 +174,7 @@ function uninstall() {
   if (existsSync(shellRc)) {
     const cleaned = readFileSync(shellRc, "utf8")
       .split("\n")
-      .filter((line) => !line.includes("# vibescc:"))
+      .filter((line) => !line.includes("# vibes:"))
       .join("\n");
     writeFileSync(shellRc, cleaned.replace(/\n{3,}/g, "\n\n") + "\n");
     info("Removed aliases from " + shellRc);

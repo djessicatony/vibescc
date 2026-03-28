@@ -1,9 +1,9 @@
 {
-  "name": "vibescc",
-  "version": "0.1.0",
-  "description": "Company-branded Claude Code experience — custom mascots and spinner verbs for your team",
+  "name": "vibes",
+  "version": "0.2.0",
+  "description": "Branded Claude Code — custom crab colors and spinner verbs",
   "author": {
     "name": "djessica"
   },
-  "keywords": ["branding", "mascot", "customization", "statusline", "spinner"]
+  "keywords": ["branding", "mascot", "customization", "crab", "spinner"]
 }

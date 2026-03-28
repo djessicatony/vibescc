@@ -3,7 +3,7 @@
 banner.py — Render brand names as gradient block-letter art.
 
 Usage:
-    python3 banner.py vibescc                    # default gradient
+    python3 banner.py vibes                      # default gradient
     python3 banner.py YC --from FB651E --to FFAA44
     python3 banner.py STRIPE --from 635BFF --to 8B7FFF
 """
@@ -258,7 +258,7 @@ def render_banner(text, color_from, color_to, indent=4):
 
 # ── Preset gradients per brand ──────────────────────────────────────────
 PRESETS = {
-    "vibescc":  {"text": "VIBESCC",  "from": "FF6B6B", "to": "C084FC"},
+    "vibes":    {"text": "VIBES",    "from": "FF6B6B", "to": "C084FC"},
     "yc":       {"text": "YC",       "from": "FB651E", "to": "FFAA44"},
     "stripe":   {"text": "STRIPE",   "from": "635BFF", "to": "A89BFF"},
     "vercel":   {"text": "VERCEL",   "from": "888888", "to": "FFFFFF"},

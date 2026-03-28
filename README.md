@@ -1,4 +1,4 @@
-# VibesCC
+# Vibes
 
 Branded Claude Code. Custom crab colors + spinner verbs. One command.
 
@@ -10,7 +10,7 @@ vercel    →  black crab      supabase  →  green crab
 ## Install
 
 ```bash
-bunx vibescc
+bunx vibes
 ```
 
 Or with git:
@@ -30,7 +30,7 @@ yc --verbs looksmaxxing               # orange crab, custom verbs
 yc --dangerously-skip-permissions     # all claude flags work
 ```
 
-Uninstall: `bunx vibescc uninstall` or `./uninstall.sh`
+Uninstall: `bunx vibes uninstall` or `./uninstall.sh`
 
 ## How it works
 

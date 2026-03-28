@@ -74,7 +74,7 @@ with open('$SETTINGS', 'w') as f:
 
     # Add alias
     local alias_line="alias $slug='python3 $LAUNCHER --config $pack_dir'"
-    local marker="# vibescc:$slug"
+    local marker="# vibes:$slug"
 
     if grep -q "$marker" "$SHELL_RC" 2>/dev/null; then
         sed -i '' "/$marker/d" "$SHELL_RC"
@@ -86,7 +86,7 @@ with open('$SETTINGS', 'w') as f:
 }
 
 # ── Interactive menu ────────────────────────────────────────────────────
-python3 "$SCRIPT_DIR/scripts/banner.py" vibescc
+python3 "$SCRIPT_DIR/scripts/banner.py" vibes
 echo -e "  ${DIM}branded Claude Code${RESET}"
 echo ""
 echo -e "  Pick what to install:"

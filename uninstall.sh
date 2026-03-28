@@ -23,13 +23,13 @@ with open('$SETTINGS', 'w') as f:
     info "Removed spinner verbs"
 fi
 
-# ── Remove all vibescc aliases from shell rc ─────────────────────────────
+# ── Remove all vibes aliases from shell rc ─────────────────────────────
 for rc in "$HOME/.zshrc" "$HOME/.bashrc"; do
-    if grep -q "# vibescc:" "$rc" 2>/dev/null; then
-        sed -i '' '/# vibescc:/d' "$rc"
+    if grep -q "# vibes:" "$rc" 2>/dev/null; then
+        sed -i '' '/# vibes:/d' "$rc"
         info "Removed aliases from $rc"
     fi
 done
 
 echo ""
-echo -e "${GREEN}${BOLD}Done!${RESET} All vibescc aliases and verbs removed."
+echo -e "${GREEN}${BOLD}Done!${RESET} All vibes aliases and verbs removed."
