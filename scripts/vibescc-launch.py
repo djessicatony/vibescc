@@ -30,15 +30,32 @@ import termios
 # Match both semicolon (38;2;R;G;B) and colon (38:2:R:G:B) formats.
 # Ink/chalk may use either depending on version.
 ORIGINALS = [
-    # (pattern, is_background)
-    (b"38;2;215;119;87", False),   # clawd_body fg (semicolon)
-    (b"38:2:215:119:87", False),   # clawd_body fg (colon)
-    (b"48;2;215;119;87", True),    # clawd_body bg (semicolon)
-    (b"48:2:215:119:87", True),    # clawd_body bg (colon)
-    (b"38;2;245;149;117", False),  # claudeShimmer fg (semicolon)
-    (b"38:2:245:149:117", False),  # claudeShimmer fg (colon)
-    (b"48;2;245;149;117", True),   # claudeShimmer bg (semicolon)
-    (b"48:2:245:149:117", True),   # claudeShimmer bg (colon)
+    # (pattern, is_shimmer, is_background)
+    # Theme A — claude/clawd_body: rgb(215,119,87)
+    (b"38;2;215;119;87", False, False),
+    (b"38:2:215:119:87", False, False),
+    (b"48;2;215;119;87", False, True),
+    (b"48:2:215:119:87", False, True),
+    # Theme A — claudeShimmer: rgb(245,149,117)
+    (b"38;2;245;149;117", True, False),
+    (b"38:2:245:149:117", True, False),
+    (b"48;2;245;149;117", True, True),
+    (b"48:2:245:149:117", True, True),
+    # Theme B — claude: rgb(255,153,51)
+    (b"38;2;255;153;51", False, False),
+    (b"38:2:255:153:51", False, False),
+    (b"48;2;255;153;51", False, True),
+    (b"48:2:255:153:51", False, True),
+    # Theme B — claudeShimmer: rgb(255,183,101)
+    (b"38;2;255;183;101", True, False),
+    (b"38:2:255:183:101", True, False),
+    (b"48;2;255;183;101", True, True),
+    (b"48:2:255:183:101", True, True),
+    # Theme C — claudeShimmer: rgb(235,159,127)
+    (b"38;2;235;159;127", True, False),
+    (b"38:2:235:159:127", True, False),
+    (b"48;2;235;159;127", True, True),
+    (b"48:2:235:159:127", True, True),
 ]
 ORIGINAL_BG_SEMI = b"48;2;0;0;0"
 ORIGINAL_BG_COLON = b"48:2:0:0:0"
@@ -69,15 +86,10 @@ def build_filter(body_rgb, bg_rgb=None):
         return f"{prefix}:2:{r}:{g}:{b}".encode()
 
     replacements = []
-    for orig, is_bg in ORIGINALS:
-        if is_bg:
-            target_rgb = body_rgb if b"245" not in orig else shimmer_rgb
-            sep = ":" if b":" in orig else ";"
-            prefix = "48"
-        else:
-            target_rgb = body_rgb if b"245" not in orig else shimmer_rgb
-            sep = ":" if b":" in orig else ";"
-            prefix = "38"
+    for orig, is_shimmer, is_bg in ORIGINALS:
+        target_rgb = shimmer_rgb if is_shimmer else body_rgb
+        sep = ":" if b":" in orig else ";"
+        prefix = "48" if is_bg else "38"
         new = f"{prefix}{sep}2{sep}{target_rgb[0]}{sep}{target_rgb[1]}{sep}{target_rgb[2]}".encode()
         replacements.append((orig, new))
 
