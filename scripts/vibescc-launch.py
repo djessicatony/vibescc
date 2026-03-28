@@ -69,20 +69,43 @@ def build_filter(body_rgb, bg_rgb=None):
         new_bg = b"48;2;" + make_replacement(*bg_rgb)
         replacements.append((ORIGINAL_BG, new_bg))
 
-    # Regex to strip terminal identification responses:
-    # DCS responses: \x1bP...ST (\x1b\\)  — e.g. ghostty ID
-    # DA responses:  \x1b[?...c            — device attributes
+    # Regex to strip terminal identification responses
     strip_terminal_responses = re.compile(
         rb"\x1bP[^\x1b]*\x1b\\|\x1b\[\?[0-9;]*c"
     )
 
+    # Smart holdback: only keep tail bytes if they could be a partial
+    # match of a color pattern (contains digits/semicolons after ESC[).
+    # This avoids the latency of always holding back bytes.
+    max_pat = max(len(old) for old, _ in replacements)
+    partial_re = re.compile(rb"[34]8;2;[\d;]{0," + str(max_pat).encode() + rb"}$")
+    leftover = b""
+
     def apply(data):
-        # Strip terminal ID sequences before they hit the screen
-        data = strip_terminal_responses.sub(b"", data)
+        nonlocal leftover
+        buf = leftover + data
+
+        # Strip terminal ID sequences
+        buf = strip_terminal_responses.sub(b"", buf)
+
         # Do replacements
         for old, new in replacements:
-            data = data.replace(old, new)
-        return data
+            buf = buf.replace(old, new)
+
+        # Smart holdback: only if tail looks like a partial color code
+        hold = 0
+        if len(buf) > max_pat:
+            tail = buf[-(max_pat):]
+            m = partial_re.search(tail)
+            if m:
+                hold = len(tail) - m.start()
+
+        if hold > 0:
+            leftover = buf[-hold:]
+            return buf[:-hold]
+        else:
+            leftover = b""
+            return buf
 
     return apply
 
