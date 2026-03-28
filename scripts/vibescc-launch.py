@@ -27,13 +27,21 @@ import fcntl
 import termios
 
 # ── Original Clawd colors (consistent across CC versions) ──────────────
-ORIGINAL_BODY = b"38;2;215;119;87"  # clawd_body / claude: rgb(215,119,87)
-ORIGINAL_SHIMMER = b"38;2;245;149;117"  # claudeShimmer: rgb(245,149,117)
-ORIGINAL_BG = b"48;2;0;0;0"  # clawd_background: rgb(0,0,0)
-
-# Also match as background colors
-ORIGINAL_BODY_AS_BG = b"48;2;215;119;87"
-ORIGINAL_SHIMMER_AS_BG = b"48;2;245;149;117"
+# Match both semicolon (38;2;R;G;B) and colon (38:2:R:G:B) formats.
+# Ink/chalk may use either depending on version.
+ORIGINALS = [
+    # (pattern, is_background)
+    (b"38;2;215;119;87", False),   # clawd_body fg (semicolon)
+    (b"38:2:215:119:87", False),   # clawd_body fg (colon)
+    (b"48;2;215;119;87", True),    # clawd_body bg (semicolon)
+    (b"48:2:215:119:87", True),    # clawd_body bg (colon)
+    (b"38;2;245;149;117", False),  # claudeShimmer fg (semicolon)
+    (b"38:2:245:149:117", False),  # claudeShimmer fg (colon)
+    (b"48;2;245;149;117", True),   # claudeShimmer bg (semicolon)
+    (b"48:2:245:149:117", True),   # claudeShimmer bg (colon)
+]
+ORIGINAL_BG_SEMI = b"48;2;0;0;0"
+ORIGINAL_BG_COLON = b"48:2:0:0:0"
 
 
 def make_replacement(r, g, b):
@@ -53,21 +61,31 @@ def build_filter(body_rgb, bg_rgb=None):
     that get split across chunk boundaries.
     """
     shimmer_rgb = make_shimmer(*body_rgb)
-    new_body_fg = b"38;2;" + make_replacement(*body_rgb)
-    new_body_bg = b"48;2;" + make_replacement(*body_rgb)
-    new_shimmer_fg = b"38;2;" + make_replacement(*shimmer_rgb)
-    new_shimmer_bg = b"48;2;" + make_replacement(*shimmer_rgb)
 
-    replacements = [
-        (ORIGINAL_BODY, new_body_fg),
-        (ORIGINAL_BODY_AS_BG, new_body_bg),
-        (ORIGINAL_SHIMMER, new_shimmer_fg),
-        (ORIGINAL_SHIMMER_AS_BG, new_shimmer_bg),
-    ]
+    def rgb_semi(prefix, r, g, b):
+        return f"{prefix};2;{r};{g};{b}".encode()
+
+    def rgb_colon(prefix, r, g, b):
+        return f"{prefix}:2:{r}:{g}:{b}".encode()
+
+    replacements = []
+    for orig, is_bg in ORIGINALS:
+        if is_bg:
+            target_rgb = body_rgb if b"245" not in orig else shimmer_rgb
+            sep = ":" if b":" in orig else ";"
+            prefix = "48"
+        else:
+            target_rgb = body_rgb if b"245" not in orig else shimmer_rgb
+            sep = ":" if b":" in orig else ";"
+            prefix = "38"
+        new = f"{prefix}{sep}2{sep}{target_rgb[0]}{sep}{target_rgb[1]}{sep}{target_rgb[2]}".encode()
+        replacements.append((orig, new))
 
     if bg_rgb:
-        new_bg = b"48;2;" + make_replacement(*bg_rgb)
-        replacements.append((ORIGINAL_BG, new_bg))
+        new_bg_semi = rgb_semi("48", *bg_rgb)
+        new_bg_colon = rgb_colon("48", *bg_rgb)
+        replacements.append((ORIGINAL_BG_SEMI, new_bg_semi))
+        replacements.append((ORIGINAL_BG_COLON, new_bg_colon))
 
     # Regex to strip terminal identification responses
     strip_terminal_responses = re.compile(
@@ -78,7 +96,7 @@ def build_filter(body_rgb, bg_rgb=None):
     # match of a color pattern (contains digits/semicolons after ESC[).
     # This avoids the latency of always holding back bytes.
     max_pat = max(len(old) for old, _ in replacements)
-    partial_re = re.compile(rb"[34]8;2;[\d;]{0," + str(max_pat).encode() + rb"}$")
+    partial_re = re.compile(rb"[34]8[;:]2[;:][\d;:]{0," + str(max_pat).encode() + rb"}$")
     leftover = b""
 
     def apply(data):
