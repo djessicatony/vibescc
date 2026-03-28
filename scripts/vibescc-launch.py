@@ -243,12 +243,25 @@ def main():
 
             if master_fd in rlist:
                 try:
-                    data = os.read(master_fd, 4096)
+                    data = os.read(master_fd, 65536)
                 except OSError:
                     break
                 if not data:
                     break
-                # Apply color filter to output (with overlap buffer)
+                # Coalesce: grab any immediately available data to avoid
+                # color codes splitting across chunk boundaries
+                while True:
+                    ready, _, _ = select.select([master_fd], [], [], 0)
+                    if not ready:
+                        break
+                    try:
+                        more = os.read(master_fd, 65536)
+                    except OSError:
+                        break
+                    if not more:
+                        break
+                    data += more
+                # Apply color filter
                 filtered = color_filter(data)
                 if filtered:
                     os.write(sys.stdout.fileno(), filtered)
