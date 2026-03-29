@@ -1,6 +1,6 @@
-# Vibes
+# VibesCC
 
-Branded Claude Code. Custom crab colors + spinner verbs. One command.
+Branded Claude Code. Custom crab + spinner verbs. One command.
 
 ```
 yc        →  orange crab     stripe    →  purple crab
@@ -10,7 +10,7 @@ vercel    →  black crab      supabase  →  green crab
 ## Install
 
 ```bash
-bunx vibes
+bunx vibescc
 ```
 
 Or with git:
@@ -26,29 +26,29 @@ Pick packs, open a new tab, done:
 ```bash
 yc                                    # orange crab
 stripe --resume                       # purple crab, resume session
-yc --verbs looksmaxxing               # orange crab, custom verbs
+yc --verbs looksmaxxing               # swap verbs
 yc --dangerously-skip-permissions     # all claude flags work
 ```
 
-Uninstall: `bunx vibes uninstall` or `./uninstall.sh`
+Uninstall: `bunx vibescc uninstall` or `./uninstall.sh`
 
 ## How it works
 
 A PTY wrapper intercepts Claude's ANSI output and swaps the crab's color bytes before they hit your terminal. No binary patching. Pixel-perfect to the original — same crab, different paint. Survives Claude Code updates.
 
-**Crab colors** = per tab. Different crabs in different tabs.
+**Crab** = per tab. Different crabs in different tabs.
 
-**Spinner verbs** = global (`~/.claude/settings.json`). Last write wins. Use `--verbs <pack>` to switch.
+**Verbs** = global (`~/.claude/settings.json`). Use `--verbs <pack>` to switch.
 
 ## Brand packs
 
-| Pack | Body | Eyes |
-|------|------|------|
-| **yc** | `#FB651E` | `#FFFFFF` |
-| **stripe** | `#635BFF` | `#FFFFFF` |
-| **vercel** | `#000000` | `#FFFFFF` |
-| **supabase** | `#3ECF8E` | `#FAFAFA` |
-| **looksmaxxing** | `#1A1A2E` | `#E94560` |
+| Pack | Crab |
+|------|------|
+| **yc** | orange, white eyes |
+| **stripe** | purple, white eyes |
+| **vercel** | black, white eyes |
+| **supabase** | green, white eyes |
+| **looksmaxxing** | dark, red eyes |
 
 ### Create your own
 
