@@ -250,26 +250,22 @@ def main():
     claude_cmd = ["claude"] + claude_args
 
     # ── PTY spawn with output filtering ────────────────────────────────
-    # pty.fork() handles setsid/TIOCSCTTY/dup2 correctly on macOS.
-    # We set window size immediately after fork, then SIGWINCH the child
-    # so claude/Ink re-reads the correct terminal dimensions.
+    # Set PTY size BEFORE the child execs claude, so it sees correct
+    # dimensions on first render. No SIGWINCH needed — avoids the
+    # double-render that kills the startup banner.
 
     pid, master_fd = pty.fork()
 
     if pid == 0:
-        # Child: exec claude
+        # Child: small delay to let parent set PTY size first
+        import time
+        time.sleep(0.05)
         os.environ.setdefault("TERM", "xterm-256color")
         os.execvp(claude_cmd[0], claude_cmd)
         sys.exit(1)
 
-    # Parent: set correct PTY size and tell child to re-read it
+    # Parent: set PTY size before child execs
     sync_window_size(master_fd)
-    import time
-    time.sleep(0.05)  # let child start before SIGWINCH
-    try:
-        os.kill(pid, signal.SIGWINCH)
-    except OSError:
-        pass
 
     # Handle SIGWINCH (terminal resize) — propagate to PTY
     def handle_winch(signum, frame):
