@@ -21,16 +21,64 @@ cd vibescc
 ./install.sh
 ```
 
-Pick packs, open a new tab, done:
-
-```bash
-yc                                    # orange crab
-stripe --resume                       # purple crab, resume session
-yc --verbs looksmaxxing               # swap verbs
-yc --dangerously-skip-permissions     # all claude flags work
-```
+Press `y`, open a new tab, done.
 
 Uninstall: `bunx vibescc uninstall` or `./uninstall.sh`
+
+## Usage
+
+```bash
+yc                          # orange crab + whatever verbs are set
+stripe                      # purple crab + whatever verbs are set
+stripe --resume             # all claude flags work
+stripe --dangerously-skip-permissions
+```
+
+### Mix and match
+
+Crab colors and verbs are independent. The crab comes from the alias, verbs come from `~/.claude/settings.json`.
+
+**Custom crab, default verbs** — just run the alias without `--verbs`:
+
+```bash
+yc                          # orange crab, Claude's default verbs
+```
+
+**Custom crab, custom verbs** — pass `--verbs` once, it sticks:
+
+```bash
+yc --verbs looksmaxxing     # orange crab + looksmaxxing verbs from now on
+yc                          # still looksmaxxing verbs (they persist)
+stripe                      # purple crab + still looksmaxxing verbs
+```
+
+**Default crab, custom verbs** — just run `claude` after setting verbs:
+
+```bash
+yc --verbs looksmaxxing     # set verbs
+claude                      # default crab + looksmaxxing verbs
+```
+
+**Switch verbs anytime:**
+
+```bash
+yc --verbs stripe           # switch to Stripe verbs
+yc --verbs yc               # switch to YC verbs
+yc --verbs looksmaxxing     # switch to looksmaxxing verbs
+```
+
+**Add verbs to Claude's defaults** instead of replacing — edit `~/.claude/settings.json`:
+
+```json
+{
+  "spinnerVerbs": {
+    "mode": "append",
+    "verbs": ["Mogging", "Looksmaxxing", "Mewing"]
+  }
+}
+```
+
+With `"append"`, your verbs get mixed into Claude's ~100 default verbs. With `"replace"`, only your verbs show.
 
 ## How it works
 
@@ -38,7 +86,7 @@ A PTY wrapper intercepts Claude's ANSI output and swaps the crab's color bytes b
 
 **Crab** = per tab. Different crabs in different tabs.
 
-**Verbs** = global (`~/.claude/settings.json`). Use `--verbs <pack>` to switch.
+**Verbs** = global (`~/.claude/settings.json`). Use `--verbs <pack>` to switch. Last write wins across all tabs.
 
 ## Brand packs
 
@@ -64,7 +112,7 @@ cat > packs/mycompany/pack.json << 'EOF'
 EOF
 ```
 
-Re-run installer to get the alias.
+Re-run `bunx vibescc` or `./install.sh` to get the alias.
 
 ## Requirements
 
