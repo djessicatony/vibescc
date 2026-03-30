@@ -50,6 +50,23 @@ stripe --dangerously-skip-permissions
 yc --verbs looksmaxxing               # swap spinner verbs
 ```
 
+### How aliases work
+
+The installer adds shell aliases to your `~/.zshrc` (or `~/.bashrc`). Each alias points to the PTY wrapper with a specific brand pack:
+
+```bash
+alias yc='python3 ~/.vibes/scripts/vibescc-launch.py --config ~/.vibes/packs/yc'
+```
+
+To add a custom alias manually:
+
+```bash
+# Add to ~/.zshrc
+alias mycompany='python3 ~/.vibes/scripts/vibescc-launch.py --config ~/.vibes/packs/mycompany'
+```
+
+Then `source ~/.zshrc` or open a new tab. Now `mycompany` launches Claude Code with your brand colors.
+
 ### Mixing Crab Colors and Verbs
 
 Crab colors and spinner verbs are independent. The crab comes from the alias you launch with. Verbs persist in `~/.claude/settings.json` until you explicitly change them.
