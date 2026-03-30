@@ -1,6 +1,6 @@
 {
   "name": "vibescc",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "description": "Branded Claude Code — custom crab colors and spinner verbs",
   "bin": {
     "vibes": "./bin/vibes.mjs"
