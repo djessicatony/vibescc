@@ -154,7 +154,7 @@ vibescc/
 - **Crab colors are per-tab, verbs are global** — you can have different crabs in different tabs, but verbs are shared across all sessions via `~/.claude/settings.json`
 - **Colors only** — can't change the crab's shape or add logos to it
 - **RGB themes only** — if Claude Code falls back to ANSI-16 colors (rare on modern terminals), the color codes differ and won't be matched
-- **Verb color = crab color** — the spinner text, border, and crab all share the same color token, so they all change together. Decoupling requires binary patching via [tweakcc](https://github.com/Piebald-AI/tweakcc)
+- **Verb color = crab color** — the spinner text, border, and crab all share the same color token, so they all change together
 
 ## License
 
