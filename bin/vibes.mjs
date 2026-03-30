@@ -61,6 +61,7 @@ function ask(question) {
 // ── Install ─────────────────────────────────────────────────────────────
 async function main() {
   console.log();
+  console.log();
   console.log(`${V}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${R}`);
   console.log(`  ${V}VibesCC Installer${R}`);
   console.log(`${V}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${R}`);
