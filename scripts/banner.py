@@ -258,7 +258,7 @@ def render_banner(text, color_from, color_to, indent=4):
 
 # ── Preset gradients per brand ──────────────────────────────────────────
 PRESETS = {
-    "vibes":    {"text": "VIBES",    "from": "FF6B6B", "to": "C084FC"},
+    "vibes":    {"text": "VIBES",    "from": "A78BFA", "to": "A78BFA"},
     "yc":       {"text": "YC",       "from": "FB651E", "to": "FFAA44"},
     "stripe":   {"text": "STRIPE",   "from": "635BFF", "to": "A89BFF"},
     "vercel":   {"text": "VERCEL",   "from": "888888", "to": "FFFFFF"},

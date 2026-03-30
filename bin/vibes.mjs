@@ -62,7 +62,14 @@ function ask(question) {
 async function main() {
   console.log();
   console.log(`  ${line()}`);
-  console.log(`  ${V}${B} VIBESCC ${R}${D} Branded Claude Code${R}`);
+  try {
+    spawnSync("python3", [join(ROOT, "scripts", "banner.py"), "vibes"], {
+      stdio: "inherit",
+    });
+  } catch {
+    console.log(`  ${V}${B} VIBESCC ${R}`);
+  }
+  console.log(`  ${D}Branded Claude Code${R}`);
   console.log(`  ${line()}`);
   console.log();
 
