@@ -76,23 +76,12 @@ async function main() {
 
   const packs = loadPacks();
 
-  console.log(`  ${D}This will install ${packs.length} brand packs:${R}`);
-  console.log();
-  for (const p of packs) {
-    console.log(`    ${V}•${R} ${p.name}`);
-  }
-  console.log();
-
-  const answer = (await ask(`  ${V}→${R} Install? (y) `)) || "y";
+  const answer = (await ask(`  ${V}→${R} Ok to proceed? (y) `)) || "y";
   if (answer.toLowerCase() !== "y") {
     console.log(`\n  ${D}Cancelled.${R}\n`);
     process.exit(0);
   }
 
-  const selected = packs;
-
-  console.log();
-  console.log(`  ${line()}`);
   console.log();
 
   // Copy files
@@ -112,40 +101,22 @@ async function main() {
 
   const launcher = join(INSTALL_DIR, "scripts", "vibescc-launch.py");
 
-  for (const pack of selected) {
+  for (const pack of packs) {
     const packDir = join(INSTALL_DIR, "packs", pack.slug);
     const alias = `alias ${pack.slug}='python3 ${launcher} --config ${packDir}' # vibes:${pack.slug}`;
     rcContent += `\n${alias}`;
-    check(`${B}${pack.slug}${R} ${D}→ ${pack.name}${R}`);
-  }
-
-  // Write verbs from last selected pack
-  const lastPack = selected[selected.length - 1];
-  if (existsSync(SETTINGS)) {
-    try {
-      const settings = JSON.parse(readFileSync(SETTINGS, "utf8"));
-      settings.spinnerVerbs = { mode: "replace", verbs: lastPack.verbs };
-      writeFileSync(SETTINGS, JSON.stringify(settings, null, 2) + "\n");
-    } catch {}
+    check(`${B}${pack.slug}${R}`);
   }
 
   writeFileSync(shellRc, rcContent.replace(/\n{3,}/g, "\n\n") + "\n");
 
   console.log();
-  console.log(`  ${line()}`);
-  console.log();
   console.log(`  ${G}${B}Installed.${R} Open a new tab, then:`);
   console.log();
-  console.log(`  ${D}Launch with a branded crab:${R}`);
-  console.log();
-  for (const p of selected) {
+  for (const p of packs) {
     console.log(`    ${V}${B}${p.slug}${R}${D}${" ".repeat(Math.max(1, 18 - p.slug.length))}${p.name}${R}`);
   }
   console.log();
-  console.log(`  ${D}All claude flags work:${R}`);
-  console.log();
-  console.log(`    ${V}yc --resume${R}`);
-  console.log(`    ${V}stripe --dangerously-skip-permissions${R}`);
   console.log(`    ${V}yc --verbs looksmaxxing${R}       ${D}swap verbs${R}`);
   console.log();
 }
