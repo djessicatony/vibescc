@@ -61,7 +61,10 @@ function ask(question) {
 // ── Install ─────────────────────────────────────────────────────────────
 async function main() {
   console.log();
-  console.log(`  ${line()}`);
+  console.log(`${V}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${R}`);
+  console.log(`  ${V}VibesCC Installer${R}`);
+  console.log(`${V}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${R}`);
+  console.log();
   try {
     spawnSync("python3", [join(ROOT, "scripts", "banner.py"), "vibes"], {
       stdio: "inherit",
@@ -69,9 +72,6 @@ async function main() {
   } catch {
     console.log(`  ${V}${B} VIBESCC ${R}`);
   }
-  console.log(`  ${D}Branded Claude Code${R}`);
-  console.log(`  ${line()}`);
-  console.log();
 
   const packs = loadPacks();
 
