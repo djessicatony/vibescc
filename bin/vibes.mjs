@@ -13,14 +13,16 @@ const HOME = homedir();
 const INSTALL_DIR = join(HOME, ".vibes");
 const SETTINGS = join(HOME, ".claude", "settings.json");
 
-// ── Colors ──────────────────────────────────────────────────────────────
-const c = {
-  reset: "\x1b[0m",
-  bold: "\x1b[1m",
-  dim: "\x1b[2m",
-  green: "\x1b[32m",
-  red: "\x1b[31m",
-};
+// ── Brand color: violet ─────────────────────────────────────────────────
+const V = "\x1b[38;2;167;139;250m"; // #A78BFA
+const R = "\x1b[0m";
+const B = "\x1b[1m";
+const D = "\x1b[2m";
+const G = "\x1b[32m";
+const RED = "\x1b[31m";
+
+const line = (w = 60) => `${V}${"─".repeat(w)}${R}`;
+const check = (msg) => console.log(`  ${G}✓${R} ${msg}`);
 
 // ── Detect shell rc ─────────────────────────────────────────────────────
 function getShellRc() {
@@ -58,29 +60,22 @@ function ask(question) {
 
 // ── Install ─────────────────────────────────────────────────────────────
 async function main() {
-  // Banner
-  try {
-    spawnSync("python3", [join(ROOT, "scripts", "banner.py"), "vibes"], {
-      stdio: "inherit",
-    });
-  } catch {
-    console.log(`\n  ${c.bold}vibescc${c.reset}\n`);
-  }
+  console.log();
+  console.log(`  ${line()}`);
+  console.log(`  ${V}${B} VIBESCC ${R}${D} Branded Claude Code${R}`);
+  console.log(`  ${line()}`);
+  console.log();
 
   const packs = loadPacks();
 
-  console.log(`  ${c.dim}Branded crab colors + spinner verbs for Claude Code${c.reset}`);
-  console.log();
-
-  // Pack list
   packs.forEach((p, i) => {
-    console.log(`    ${c.bold}${i + 1}${c.reset}  ${p.name}`);
+    console.log(`    ${V}${B}${i + 1}${R}  ${p.name}`);
   });
   console.log();
-  console.log(`    ${c.bold}a${c.reset}  all`);
+  console.log(`    ${V}${B}a${R}  Install all`);
   console.log();
 
-  const choice = (await ask(`  → `)) || "a";
+  const choice = (await ask(`  ${V}→${R} `)) || "a";
 
   let selected;
   if (choice.toLowerCase() === "a") {
@@ -93,16 +88,20 @@ async function main() {
   }
 
   if (selected.length === 0) {
-    console.log(`\n  ${c.red}Nothing selected.${c.reset}\n`);
+    console.log(`\n  ${RED}Nothing selected.${R}\n`);
     process.exit(1);
   }
 
-  // Install
   console.log();
+  console.log(`  ${line()}`);
+  console.log();
+
+  // Copy files
   mkdirSync(INSTALL_DIR, { recursive: true });
   cpSync(join(ROOT, "scripts"), join(INSTALL_DIR, "scripts"), { recursive: true });
   cpSync(join(ROOT, "packs"), join(INSTALL_DIR, "packs"), { recursive: true });
 
+  // Shell rc
   const shellRc = getShellRc();
   if (!existsSync(shellRc)) writeFileSync(shellRc, "");
   let rcContent = readFileSync(shellRc, "utf8");
@@ -118,7 +117,7 @@ async function main() {
     const packDir = join(INSTALL_DIR, "packs", pack.slug);
     const alias = `alias ${pack.slug}='python3 ${launcher} --config ${packDir}' # vibes:${pack.slug}`;
     rcContent += `\n${alias}`;
-    console.log(`  ${c.green}+${c.reset} ${c.bold}${pack.slug}${c.reset}  ${c.dim}${pack.name}${c.reset}`);
+    check(`${B}${pack.slug}${R} ${D}→ ${pack.name}${R}`);
   }
 
   // Write verbs from last selected pack
@@ -133,18 +132,26 @@ async function main() {
 
   writeFileSync(shellRc, rcContent.replace(/\n{3,}/g, "\n\n") + "\n");
 
-  // Done
   console.log();
-  console.log(`  ${c.green}${c.bold}Installed.${c.reset} Open a new tab and run:\n`);
-  console.log(`    ${c.bold}${selected[0].slug}${c.reset}`);
+  console.log(`  ${line()}`);
+  console.log();
+  console.log(`  ${G}${B}Installed.${R} Open a new tab and run:`);
+  console.log();
+  console.log(`    ${V}${B}${selected[0].slug}${R}`);
   if (selected.length > 1) {
-    console.log(`    ${c.dim}or: ${selected.slice(1).map(p => p.slug).join(", ")}${c.reset}`);
+    console.log(`    ${D}or: ${selected.slice(1).map(p => p.slug).join(", ")}${R}`);
   }
   console.log();
 }
 
 // ── Uninstall ───────────────────────────────────────────────────────────
 function uninstall() {
+  console.log();
+  console.log(`  ${line()}`);
+  console.log(`  ${V}${B} VIBESCC ${R}${D} Uninstall${R}`);
+  console.log(`  ${line()}`);
+  console.log();
+
   const shellRc = getShellRc();
   if (existsSync(shellRc)) {
     const cleaned = readFileSync(shellRc, "utf8")
@@ -152,6 +159,7 @@ function uninstall() {
       .filter((line) => !line.includes("# vibes:"))
       .join("\n");
     writeFileSync(shellRc, cleaned.replace(/\n{3,}/g, "\n\n") + "\n");
+    check("Removed aliases");
   }
 
   if (existsSync(SETTINGS)) {
@@ -159,10 +167,13 @@ function uninstall() {
       const settings = JSON.parse(readFileSync(SETTINGS, "utf8"));
       delete settings.spinnerVerbs;
       writeFileSync(SETTINGS, JSON.stringify(settings, null, 2) + "\n");
+      check("Removed spinner verbs");
     } catch {}
   }
 
-  console.log(`\n  ${c.green}${c.bold}Uninstalled.${c.reset} Aliases and verbs removed.\n`);
+  console.log();
+  console.log(`  ${G}${B}Done.${R} Aliases and verbs removed.`);
+  console.log();
 }
 
 // ── Entry ───────────────────────────────────────────────────────────────
