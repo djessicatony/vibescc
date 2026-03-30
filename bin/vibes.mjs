@@ -76,29 +76,20 @@ async function main() {
 
   const packs = loadPacks();
 
-  packs.forEach((p, i) => {
-    console.log(`    ${V}${B}${i + 1}${R}  ${p.name}`);
-  });
+  console.log(`  ${D}This will install ${packs.length} brand packs:${R}`);
   console.log();
-  console.log(`    ${V}${B}a${R}  Install all`);
+  for (const p of packs) {
+    console.log(`    ${V}•${R} ${p.name}`);
+  }
   console.log();
 
-  const choice = (await ask(`  ${V}→${R} `)) || "a";
-
-  let selected;
-  if (choice.toLowerCase() === "a") {
-    selected = packs;
-  } else {
-    const nums = choice.split(/[,\s]+/).map(Number);
-    selected = nums
-      .filter((n) => n >= 1 && n <= packs.length)
-      .map((n) => packs[n - 1]);
+  const answer = (await ask(`  ${V}→${R} Install? (y) `)) || "y";
+  if (answer.toLowerCase() !== "y") {
+    console.log(`\n  ${D}Cancelled.${R}\n`);
+    process.exit(0);
   }
 
-  if (selected.length === 0) {
-    console.log(`\n  ${RED}Nothing selected.${R}\n`);
-    process.exit(1);
-  }
+  const selected = packs;
 
   console.log();
   console.log(`  ${line()}`);
@@ -143,12 +134,19 @@ async function main() {
   console.log();
   console.log(`  ${line()}`);
   console.log();
-  console.log(`  ${G}${B}Installed.${R} Open a new tab and run:`);
+  console.log(`  ${G}${B}Installed.${R} Open a new tab, then:`);
   console.log();
-  console.log(`    ${V}${B}${selected[0].slug}${R}`);
-  if (selected.length > 1) {
-    console.log(`    ${D}or: ${selected.slice(1).map(p => p.slug).join(", ")}${R}`);
+  console.log(`  ${D}Launch with a branded crab:${R}`);
+  console.log();
+  for (const p of selected) {
+    console.log(`    ${V}${B}${p.slug}${R}${D}${" ".repeat(Math.max(1, 18 - p.slug.length))}${p.name}${R}`);
   }
+  console.log();
+  console.log(`  ${D}All claude flags work:${R}`);
+  console.log();
+  console.log(`    ${V}yc --resume${R}`);
+  console.log(`    ${V}stripe --dangerously-skip-permissions${R}`);
+  console.log(`    ${V}yc --verbs looksmaxxing${R}       ${D}swap verbs${R}`);
   console.log();
 }
 
