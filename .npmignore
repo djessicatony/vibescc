@@ -1,0 +1,12 @@
+# Only ship what bunx needs: bin/, packs/, scripts/
+# Everything else is excluded
+.claude/
+.git/
+commands/
+.claude-plugin/
+install.sh
+uninstall.sh
+CONTRIBUTING.md
+__pycache__/
+*.pyc
+.DS_Store
