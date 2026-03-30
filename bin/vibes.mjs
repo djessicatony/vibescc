@@ -148,8 +148,14 @@ function uninstall() {
     } catch {}
   }
 
+  const { rmSync } = await import("fs");
+  if (existsSync(INSTALL_DIR)) {
+    rmSync(INSTALL_DIR, { recursive: true });
+    check("Removed ~/.vibes");
+  }
+
   console.log();
-  console.log(`  ${G}${B}Done.${R} Aliases and verbs removed.`);
+  console.log(`  ${G}${B}Done.${R} Open a new tab — aliases are gone.`);
   console.log();
 }
 

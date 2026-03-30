@@ -31,5 +31,11 @@ for rc in "$HOME/.zshrc" "$HOME/.bashrc"; do
     fi
 done
 
+# ── Remove installed files ────────────────────────────────────────────
+if [ -d "$HOME/.vibes" ]; then
+    rm -rf "$HOME/.vibes"
+    info "Removed ~/.vibes"
+fi
+
 echo ""
-echo -e "${GREEN}${BOLD}Done!${RESET} All vibes aliases and verbs removed."
+echo -e "${GREEN}${BOLD}Done!${RESET} Open a new tab — aliases are gone."
