@@ -257,9 +257,9 @@ def main():
     pid, master_fd = pty.fork()
 
     if pid == 0:
-        # Child: small delay to let parent set PTY size first
+        # Child: wait for parent to set PTY size first
         import time
-        time.sleep(0.05)
+        time.sleep(0.15)
         os.environ.setdefault("TERM", "xterm-256color")
         os.execvp(claude_cmd[0], claude_cmd)
         sys.exit(1)
